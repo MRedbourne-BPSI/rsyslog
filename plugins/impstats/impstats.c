@@ -1,11 +1,23 @@
-/*
- * impstats.c
+/* impstats.c
  * A module to periodically output statistics gathered by rsyslog.
  *
  * Copyright 2010-2025 Adiscon GmbH.
  *
+ * This file is part of rsyslog.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * http://www.apache.org/licenses/LICENSE-2.0
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *       -or-
+ *       see COPYING.ASL20 in the source distribution
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 #include "config.h"
 #include "rsyslog.h"
@@ -132,9 +144,7 @@ ENDisCompatibleWithFeature
 
 #ifdef OS_LINUX
 /* count number of open files (linux specific) */
-static void
-countOpenFiles(void)
-{
+static void countOpenFiles(void) {
     char proc_path[MAXFNAME];
     DIR *dp;
     struct dirent *files;
@@ -154,9 +164,7 @@ done:
 }
 #endif
 
-static void
-initConfigSettings(void)
-{
+static void initConfigSettings(void) {
     cs.iStatsInterval = DEFAULT_STATS_PERIOD;
     cs.iFacility = DEFAULT_FACILITY;
     cs.iSeverity = DEFAULT_SEVERITY;
@@ -166,9 +174,7 @@ initConfigSettings(void)
 }
 
 /* actually submit a message to the rsyslog core */
-static void
-doSubmitMsg(uchar *line)
-{
+static void doSubmitMsg(uchar *line) {
     smsg_t *pMsg;
 
     if (msgConstruct(&pMsg) != RS_RET_OK) goto finalize_it;
@@ -194,9 +200,7 @@ finalize_it:
 }
 
 /* log stats message to file; limited error handling done */
-static void
-doLogToFile(const char *ln, const size_t lenLn)
-{
+static void doLogToFile(const char *ln, const size_t lenLn) {
     struct iovec iov[4];
     ssize_t nwritten;
     ssize_t nexpect;
@@ -240,9 +244,7 @@ done:
 }
 
 /* submit a line to our log destinations. Line must be fully formatted */
-static rsRetVal
-submitLine(const char *const ln, const size_t lenLn)
-{
+static rsRetVal submitLine(const char *const ln, const size_t lenLn) {
     DEFiRet;
     if (runModConf->bLogToSyslog) doSubmitMsg((uchar*)ln);
     if (runModConf->logfile != NULL) doLogToFile(ln, lenLn);
@@ -250,18 +252,14 @@ submitLine(const char *const ln, const size_t lenLn)
 }
 
 /* callback for statsobj */
-static rsRetVal
-doStatsLine(void __attribute__((unused)) * usrptr, const char *const str)
-{
+static rsRetVal doStatsLine(void __attribute__((unused)) * usrptr, const char *const str) {
     DEFiRet;
     iRet = submitLine(str, strlen(str));
     RETiRet;
 }
 
 /* generate statistics messages */
-static void
-generateStatsMsgs(void)
-{
+static void generateStatsMsgs(void) {
     struct rusage ru;
     int r;
 
@@ -402,9 +400,7 @@ BEGINendCnfLoad
 ENDendCnfLoad
 
 /* Resolve ruleset name if set */
-static rsRetVal
-checkRuleset(modConfData_t *modConf)
-{
+static rsRetVal checkRuleset(modConfData_t *modConf) {
     ruleset_t *pRuleset;
     rsRetVal localRet;
     DEFiRet;
@@ -539,9 +535,7 @@ BEGINqueryEtryPt
     CODEqueryEtryPt_doHUP;
 ENDqueryEtryPt
 
-static rsRetVal
-resetConfigVariables(uchar __attribute__((unused)) * pp, void __attribute__((unused)) * pVal)
-{
+static rsRetVal resetConfigVariables(uchar __attribute__((unused)) * pp, void __attribute__((unused)) * pVal) {
     initConfigSettings();
     return RS_RET_OK;
 }
@@ -586,9 +580,7 @@ typedef struct prom_ctx_s {
     size_t item_count;/* number of items collected (debug) */
 } prom_ctx_t;
 
-static rsRetVal
-collectStats_prom(void *usrptr, const char *const str)
-{
+static rsRetVal collectStats_prom(void *usrptr, const char *const str) {
     prom_ctx_t *ctx = (prom_ctx_t*)usrptr;
     if (!ctx->first)
         es_addChar(&ctx->arr, ',');
@@ -599,9 +591,7 @@ collectStats_prom(void *usrptr, const char *const str)
 }
 
 /* vi:set ai: */
-static void
-generatePrometheusStats(void)
-{
+static void generatePrometheusStats(void) {
     /* Update resource counters (safe/optional) */
     struct rusage ru;
     if (getrusage(RUSAGE_SELF, &ru) == 0) {
