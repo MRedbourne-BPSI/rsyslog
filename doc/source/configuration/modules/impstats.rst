@@ -163,7 +163,11 @@ JSON implementation.  ES 2.0 no longer supports valid JSON and
 disallows dots inside names.  The "json-elasticsearch" format
 option replaces those dots by the bang ("!") character. So
 "discarded.full" becomes "discarded!full".
-Options: json/json-elasticsearch/cee/legacy
+
+The prometheus format supports array-based JSON in the stats: [] section 
+for monitoring systems capable of item discovery (prototyping).
+
+Options: json/json-elasticsearch/cee/legacy/prometheus
 
 
 log.syslog
