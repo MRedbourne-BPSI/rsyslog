@@ -293,6 +293,7 @@ TESTS +=  \
 	msgdup_props.sh \
 	empty-ruleset.sh \
 	ruleset-direct-queue.sh \
+	imtcp-tls-gibberish.sh \
 	imtcp-listen-port-file-2.sh \
 	allowed-sender-tcp-ok.sh \
 	allowed-sender-tcp-fail.sh \
@@ -614,7 +615,9 @@ endif # ENABLE_DEFAULT_TESTS
 
 if ENABLE_IMTCP_TESTS
 TESTS +=  \
-	imtcp-listen-port-file-2.sh \
+	fromhost-port.sh \
+	fromhost-port-tuple.sh \
+	fromhost-port-async-ruleset.sh \
 	allowed-sender-tcp-ok.sh \
 	allowed-sender-tcp-fail.sh \
 	allowed-sender-tcp-hostname-ok.sh \
@@ -1041,6 +1044,7 @@ TESTS += \
 	kafka-selftest.sh \
 	omkafka.sh \
 	omkafkadynakey.sh \
+	omkafka-headers.sh \
 	imkafka.sh \
 	imkafka-backgrounded.sh \
 	imkafka-config-err-ruleset.sh \
@@ -1068,13 +1072,14 @@ sndrcv_kafka.log: imkafka_multi_single.log
 imkafka_multi_group.log: sndrcv_kafka.log
 sndrcv_kafka_multi_topics.log: imkafka_multi_group.log
 omkafkadynakey.log: sndrcv_kafka_multi_topics.log
+omkafka-headers.log: omkafkadynakey.log
 
 if HAVE_VALGRIND
 TESTS += \
 	omkafka-vg.sh \
 	imkafka-vg.sh
 
-omkafka-vg.log: omkafkadynakey.log
+omkafka-vg.log: omkafka-headers.log
 imkafka-vg.log: omkafka-vg.log
 endif
 endif
@@ -2512,6 +2517,10 @@ EXTRA_DIST= \
 	msgdup_props.sh \
 	empty-ruleset.sh \
 	ruleset-direct-queue.sh \
+	fromhost-port.sh \
+	fromhost-port-tuple.sh \
+	fromhost-port-async-ruleset.sh \
+	imtcp-tls-gibberish.sh \
 	imtcp-listen-port-file-2.sh \
 	allowed-sender-tcp-ok.sh \
 	allowed-sender-tcp-fail.sh \
@@ -2982,6 +2991,7 @@ EXTRA_DIST= \
 	kafka-selftest.sh \
 	omkafka.sh \
 	omkafkadynakey.sh \
+	omkafka-headers.sh \
 	omkafka-vg.sh \
 	imkafka-hang-on-no-kafka.sh \
 	imkafka-hang-other-action-on-no-kafka.sh \

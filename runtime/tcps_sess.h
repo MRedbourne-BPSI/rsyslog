@@ -44,10 +44,15 @@ struct tcps_sess_s {
         uchar *pMsg; /* message (fragment) received */
         prop_t *fromHost; /* host name we received messages from */
         prop_t *fromHostIP;
+        prop_t *fromHostPort;
         void *pUsr; /* a user-pointer */
         rsRetVal (*DoSubmitMessage)(tcps_sess_t *, uchar *, int); /* submit message callback */
         int iMaxLine; /* fast lookup buffer for config property */
         pthread_mutex_t mut;
+        unsigned tlsProbeBytes; /**< number of bytes collected for TLS client detection */
+        uchar tlsProbeBuf[5]; /**< first bytes received for TLS client detection */
+        sbool tlsProbeDone; /**< indicates TLS client detection has been completed */
+        sbool tlsMismatchWarned; /**< avoids logging the same TLS mismatch twice */
 };
 
 
@@ -66,17 +71,20 @@ BEGINinterface(tcps_sess) /* name must also be changed in ENDinterface macro! */
     rsRetVal (*SetUsrP)(tcps_sess_t *, void *);
     rsRetVal (*SetHost)(tcps_sess_t *pThis, uchar *);
     rsRetVal (*SetHostIP)(tcps_sess_t *pThis, prop_t *);
+    rsRetVal (*SetHostPort)(tcps_sess_t *pThis, prop_t *);
     rsRetVal (*SetStrm)(tcps_sess_t *pThis, netstrm_t *);
     rsRetVal (*SetMsgIdx)(tcps_sess_t *pThis, int);
     rsRetVal (*SetOnMsgReceive)(tcps_sess_t *pThis, rsRetVal (*OnMsgReceive)(tcps_sess_t *, uchar *, int));
 ENDinterface(tcps_sess)
-#define tcps_sessCURR_IF_VERSION 3 /* increment whenever you change the interface structure! */
+#define tcps_sessCURR_IF_VERSION 4 /* increment whenever you change the interface structure! */
 /* interface changes
  * to version v2, rgerhards, 2009-05-22
  * - Data structures changed
  * - SetLstnInfo entry point added
  * version 3, rgerhards, 2013-01-21:
  * - signature of SetHostIP() changed
+ * version 4, 2025-01-??:
+ * - SetHostPort() entry point added
  */
 
 
